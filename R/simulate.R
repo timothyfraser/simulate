@@ -68,8 +68,8 @@ simulate = function(data, seed = NULL, reps = 1000){
   if(type == "poisson"){
     output <- data %>%
       group_by(replicate, case) %>%
-      summarize(pv = rpois(n = 1, lamda = ysim),
-                ev = rpois(n = reps, lamda = ysim) %>% mean())
+      summarize(pv = rpois(n = 1, lambda = ysim),
+                ev = rpois(n = reps, lambda = ysim) %>% mean())
   }
   if(type == "gamma"){
     output <- data %>%
