@@ -69,7 +69,7 @@ simulate = function(data, seed = NULL, reps = 1000){
     output <- data %>%
       group_by(replicate, case) %>%
       summarize(pv = rpois(n = 1, lamda = ysim),
-                ev = rpois(n = reps, lamda = yhat) %>% mean())
+                ev = rpois(n = reps, lamda = ysim) %>% mean())
   }
   if(type == "gamma"){
     output <- data %>%
