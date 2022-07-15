@@ -4,14 +4,15 @@
 ##################################
 # Getting Started
 ##################################
-install.packages("devtools")
-install.packages("roxygen2")
+#install.packages("devtools")
+#install.packages("roxygen2")
 
 library(devtools)
 library(roxygen2)
 
 setwd("/cloud/project")
-create("simulate")
+#create("simulate")
+
 # Click Definitely
 
 ##################################
@@ -59,58 +60,14 @@ library(simulate)
 #######################
 #usethis::use_vignette("simulate")
 
+#setwd("/cloud/project/")
+
 ################################
 # Test from Github
 ################################
 
 #library(devtools)
 #install_github("timothyfraser/simulate")
-
-#####################################
-# Test
-#####################################
-library(tidyverse)
-library(simulate)
-
-m <- mtcars %>% lm(formula = mpg ~ disp + cyl)
-
-#?tabulate()
-# Generate simulated coefficient table
-e <- m %>%
-  equate() %>%
-  get_coeftable()
-
-e <- m %>%
-  equate()
-
-#  get_table()
-e %>% tabulate()
-
-
-m %>%
-  get_newdata(setx = list(disp = c(100, 200, 300), cyl = c(6)))
-
-mysim <- m %>%
-  equations() %>%
-  calculate(setx = list(disp = c(100, 200))) %>%
-  simulate() 
-
-mysim %>% 
-  group_by(case) %>% 
-  tabulate(qi = "ev")
-
-mysim %>% 
-  pivot_wider(id_cols = c(replicate), 
-              names_from = case, 
-              values_from = ev, 
-              names_prefix = "ev") %>%
-  # Calculate first differences
-  mutate(fd = ev2 - ev1) %>%
-  tabulate(qi = "fd", mu = 0, two.tailed = TRUE)
-
-
-mysim %>% bands(qi = "ev")
-mysim %>% group_by(case) %>% bands(qi = "ev")
 
 
 
