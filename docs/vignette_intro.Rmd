@@ -1,8 +1,12 @@
 ---
 title: "Using the `simulate` package in `R`!"
 subtitle: "A starter vignette"
-author: "Timothy Fraser, PhD"
-output: html_document
+author: "Timothy Fraser, PhD<br>Computational Social Scientist"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    rmdformats::robobook
+self_contained: true
 always_allow_html: true
 bibliography: references.bib
 ---
@@ -11,7 +15,7 @@ bibliography: references.bib
 knitr::opts_chunk$set(
   collapse = FALSE,
   comment = "#>",
-  message = FALSE, warning = FALSE, echo = FALSE
+  message = FALSE, warning = FALSE, echo = TRUE
 )
 library(knitr) # for tables/knitting/images
 library(DiagrammeR) # for mermaid diagrams
@@ -136,7 +140,7 @@ m <- mtcars %>%
 <br>
 <br>
 
-## 2. Estimation Uncertainty with `equate()`
+## 2. `equate()` estimation uncertainty
 
 Next, we'll use `equate()` to generate 1000 model equations, each very close to the observed model equation in model `m`, but each just slightly different. These slightly differing model equations represent `estimation uncertainty`, the uncertainty in the true values of our beta coefficients.
 
