@@ -1,0 +1,378 @@
+---
+title: "Using the `simulate` package in `R`!"
+subtitle: "A starter vignette"
+author: "Timothy Fraser, PhD"
+output: html_document
+always_allow_html: true
+bibliography: references.bib
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = FALSE,
+  comment = "#>",
+  message = FALSE, warning = FALSE, echo = FALSE
+)
+library(knitr) # for tables/knitting/images
+library(DiagrammeR) # for mermaid diagrams
+```
+
+Welcome to the `simulate` package! This `R` package helps `R` coders to conduct statistical simulations using their regression models.
+
+## Why `simulate`?
+
+*Statistical simulation* refers to generating model predictions for a hypothetical observation with specific traits (usual the average case in the dataset), using repeated simulations (random draws) to account for estimation and fundamental uncertainty. 
+
+The idea was popularized by Gary King and colleagues' Stata package `Clarify` [@king_et_al_2000], and extended to `R` through the work of Kosuke Imai, Olivia Lau, Gary King, Christine Choirat, and many more via the `Zelig` package in `R`. [@imai_et_al_2008, @choirat_et_al_2018]. 
+
+With Zelig recently going offline, the `simulate` package provides a lightweight stand-in for regular `Zelig` users, supporting basic models from the `lm()`, `glm()`, `MASS::glm.nb()`, and `betareg:betareg()` functions.
+
+## Install Package from Github
+
+You can install `simulate` from Github using the `devtools` package's `install_github()` function. (Sorry, no CRAN package right now!)
+
+```{r, eval = FALSE}
+# Load devtools
+library(devtools)
+# Install package from github!
+install_github("timothyfraser/simulate", 
+               # and get the package's dependencies
+               dependencies = TRUE, upgrade = TRUE)
+```
+
+To get started, please load the `simulate` and `tidyverse` packages! `simulate` is intended to be used in tandem with `tidyverse` functions from `ggplot2` and `dplyr`; they are necessary for running `simulate` functions. 
+
+```{r setup}
+library(simulate) # for tidy simulation!
+library(tidyverse) # for tidy data wrangling and visualization!
+```
+
+
+## Workflow
+
+Using the `simulate` package involves a short string of key functions, including `equate()`, `calculate()`, `simulate()`, `tabulate()`, and `illustrate()`. See Figure 1!
+
+```{r flowchart, echo = FALSE, out.height = "50%", out.width = "100%", fig.align = 'left', fig.cap="Figure 1: Sample Workflow in `simulate` package!"}
+'graph TD;
+  
+  %%% Nodes
+  m[model]
+  
+    e["equate()"]
+    c["calculate(setx = list(...))"]
+    s["simulate()"]
+    g["group_by(case)"]
+    t["tabulate()"]
+    i["illustrate()"]
+    
+
+  %% Start
+  m -->|Simulate Model Equations<br>from Multivariate Normal Distribution| e
+  
+  subgraph Estimation Error
+    e -->|Calculate Simulated Model Equations<br>given Conditions in setx| c
+  end
+
+  subgraph Fundamental Error
+    c -->|Simulate Predicted & Expected Values<br>from Monte Carlo Samples| s
+  end
+  
+  subgraph Reporting
+    s -->|for each condition| g
+    g -->|tabulate<br>quantities of interest| t
+    g -->|get illustration<br>data| i
+    e -->|tabulate<br>coefficient<br>table| t
+  end
+  
+  ' %>%
+  paste() %>%
+  mermaid(width = 1000, height = 750)
+```
+
+<br>
+<br>
+
+## Example
+
+For example, let's use the famous `mtcars` dataset to simulate the effects of horse power (`hp`) and cylinders (`cyl`) on the mileage (`mpg`) of 32 fancy cars.
+
+A usual `simulate` package query might look a bit like **this below**. 
+
+```{r, eval = FALSE}
+# Using a sample dataset
+mtcars %>%
+  # Make a model
+  mutate(cyl = factor(cyl)) %>%
+  lm(formula = mpg ~ hp + cyl) %>%
+  # Simulate estimate uncertainty
+  equate() %>%
+  # Calculate predictions from simulated equations
+  calculate(setx = list(hp = c(100, 150, 200))) %>%
+  # Simulate fundamental uncertainty
+  simulate() %>%
+  # for each setx case
+  group_by(case) %>%
+  # summarize results!
+  tabulate(qi = "ev", mu = 0)
+```
+
+In the following sections, I'll break down each of these functions with examples!
+
+<br>
+<br>
+
+## 1. Make Model Object
+
+First, we'll use the ```lm()``` function to create a simple ordinary least squares model, called `m`, with `mpg` as the outcome and `hp` and `cyl` as predictors. We'll turn `cyl` into a `factor()`, to demonstrate how to use factors / fixed effects here.
+
+*Note:* Current limitations of the package require that you turn predictors into `factor()` format *before* regressing them in the model. `simulate` will not work otherwise.
+
+```{r}
+m <- mtcars %>%
+  mutate(cyl = factor(cyl)) %>%
+  lm(formula = mpg ~ hp + cyl)
+```
+
+<br>
+<br>
+
+## 2. Estimation Uncertainty with `equate()`
+
+Next, we'll use `equate()` to generate 1000 model equations, each very close to the observed model equation in model `m`, but each just slightly different. These slightly differing model equations represent `estimation uncertainty`, the uncertainty in the true values of our beta coefficients.
+
+Exactly like in `Zelig` and `CLARIFY`, `equate()` takes random draws from a multivariate normal distribution using the model's coefficients and variance-covariance matrix.
+
+```{r}
+myequations <- m %>% equate()
+```
+
+A bonus of the `simulate` package is that `equate()` gives you more control, allowing you to work directly with our simulated equations, in the event that you only want to account for estimation uncertainty, or in the event that you want to reuse the exact same multivariate normal distribution. 
+
+You can set a seed with `seed = 12345`, for example, to reproduce results. To change the number of simulated equations sampled, adjust `reps` from `reps = 1000` (default) to, for example, `reps = 3`. (Though 1000 is standard!)
+
+```{r}
+# for example,
+m %>% equate(reps = 3, seed = 12345)
+```
+
+
+<br>
+<br>
+
+## 3. `calculate()` simulated values
+
+Next, we're going to use `calculate()` to compute our simulated equations. By default, `calculate()` takes the median of numeric variables and the mode of categorical variables, but you can simulate at specific values, using the argument `setx = list(...)` (much like in `Zelig`).
+
+For example, let's calculate the simulated `mpg` for an otherwise average car as its `hp` increases from `100` to `150` to `200`.
+
+```{r}
+mycalc <- myequations %>% 
+  calculate(setx = list(hp = c(100, 150, 200)))
+```
+`calculate` outputs a data.frame containing `replicate`, the id for each simulated equation, `ysim`, the predictions from each simulated equation, `sigma`, the residual standard error for the model, and `case`, the unique ID for the *n* conditions supplied in `setx.` We used `hp = c(100, 150, 200)`, totalling 3 conditions, so `case` runs from `1` to `3`.
+
+```{r, eval=  FALSE}
+mycalc %>% head(3)
+```
+
+<br>
+<br>
+
+
+## 4. `simulate()` fundamental uncertainty
+
+Fourth, we can use `simulate()` to simulate fundamental uncertainty. This takes each simulated value outputted by `calculate()` and then constructs a distribution fitting the outcome variable (normal for `lm()`, poisson for `glm(family = "Poisson")`, etc.)
+
+`simulate()` outputs a `tibble` containing `replicate`, the unique ID for each simulated equation, `pv`, the predicted value for that equation, `ev`, the expected value for that equation, and `case`, the unique ID for each condition specified in `setx` in the `calculate()` function.
+
+```{r}
+mysim <- mycalc %>% simulate()
+```
+
+Check it out!
+
+```{r}
+mysim %>% head()
+```
+
+But what *are* `ev` and `pv`?
+
+- To make predicted values (`pv`), it simulates 1 random draw from this distribution. 
+
+- To make expected values (`ev`), it simulates 1000 random draws from this distribution, and takes the average of them. 
+
+Predicted values are encouraged when making predictions about the future, since they generate wider confidence intervals, while expected values are generally encouraged for explaining the past, as they generate more precise estimates, averaging over fundamental uncertainty.
+
+<br>
+<br>
+
+We can do a lot with these values using `ggplot2`! The most direct visualization is usually a `geom_point()` or `geom_jitter()`, but `geom_violin()` can be handy at showing distributions too!
+
+```{r,  out.width = "100%", fig.height=2, dpi=300}
+mysim %>% 
+  # map aesthetics
+  ggplot(mapping = aes(x = case, y = ev, color = factor(case), group = factor(case) )) +
+  # Show full 1000 expected value range
+  geom_jitter() +
+  # Show distributions
+  geom_violin(fill = "white", alpha = 0.5) +
+  # Relabel the x-axis's case variable as needed
+  scale_x_continuous(
+    breaks = c(1, 2, 3),
+    labels = c("100 hp", "150 hp", "200 hp")) +
+  # Skip legend
+  guides(color = "none") +
+  # Add labels
+  labs(x = "Level of Horsepower", y = "Expected Mileage (mpg)",
+       color = "Conditions")
+```
+
+<br>
+<br>
+
+## 5. `illustrate()` results
+
+What if we want to visualize not just the overall range, but varying confidence intervals? To get that data, we can use `illustrate()` on a quantity of interest (`qi`). Be sure to use `group_by(case)` to get confidence intervals for each different condition from `setx`!
+
+```{r}
+mybands <- mysim %>% 
+  group_by(case) %>%
+  illustrate(qi = "ev")
+```
+Check it out! Each row has a unique ID describing a band, and together, this tidy dataframe can be used to visualize the full range of confidence intervals in `ggplot2.`
+
+```{r}
+mybands %>% head()
+```
+
+We can visualize `mybands` like so in `ggplot2` (but for ideas, check out my other tutorials on [RPubs](https://rpubs.com/timothyfraser)!)
+
+```{r, out.width = "100%",  fig.height=2, dpi=300}
+mybands %>%
+  # Map aethestics
+  ggplot(mapping = aes(x = case, ymin = lower, ymax = upper, group = group, fill = ci)) +
+  # Make a pretty ribbon for each group!
+  geom_ribbon(alpha = 0.5, color = "black") +
+  # Shade the ribbon!
+  scale_fill_brewer(palette = "Blues") +
+  # Relabel the x-axis's case variable as needed
+  scale_x_continuous(
+    breaks = c(1, 2, 3),
+    labels = c(100, 150, 200)) +
+  # Add lables
+  labs(x = "Level of Horsepower", y = "Expected Mileage (mpg)", 
+       fill = "Confidence\nInterval")
+```
+
+`illustrate()` can even be used on other outputs, like our model equations from `equate()`.
+
+```{r}
+myequations %>%
+  illustrate(qi = "hp") %>%
+  head(3)
+```
+
+
+## 6. `tabulate()` results
+
+Finally, do you just want a nice model table? Can do! We can tabulate these results like so, supplying the `tabulate()` function a column to tabulate.
+
+<br>
+
+### 6.1 Tabulating Confidence Intervals
+
+`tabulate()` will return an `estimate`, the median simulated value for your quantity of interest (`qi`), `lower` and `upper` simulated confidence intervals (defaulting at 95% as shown by `ci = 0.95`), and `se`, showing the standard deviation of simulations. We can even pair it with `group_by(case)` to get estimates for each level.
+
+```{r}
+mysim %>% 
+  group_by(case) %>%
+  tabulate(qi = "ev", ci = 0.95, mu = 0)
+```
+
+<br>
+
+### 6.2 Hypothesis Testing with `mu`
+
+Further, you can easily test *whatever hypothesis you want* using the `mu` parameter above. `mu` sets the null hypothesis for the estimate. The `p_value` shows a one-tailed test of what percentage of simulations cross `mu` from the estimate. As in, if the estimate is positive and `mu = 0`, what share of simulations are negative? Our p-value for the null hypothesis `mu = 0` above is `0%`, but that's not very surprising. 
+
+Instead, `tabulate()`'s `mu` parameter becomes handy when testing hypotheses about our simulations against real world benchmarks. For instance, did PTSD rates after a disaster exceed the average level in the population? As X increases from 1 to 10, how often do we expect those rates to exceed `mu` percent of residents?
+
+Or in this case, the median mileage (`mpg`) in our dataset is `19.2` miles per gallon. So a meaningful quantity of interest might be, at what level of horsepower does a car's mileage really begin to exceed average levels?
+
+```{r}
+mtcars$mpg %>% median()
+```
+We can test this hypothesis by setting `mu` to `19.2`. We see below that otherwise-average cars with a `hp` of `100` (`case == 1`) do not tend to have `mpg` that are significantly different from the median. However, as their `hp` increases (`case == 2` and `case == 3`), their `mpg` actually becomes significantly *lower* that median levels!
+
+```{r}
+mysim %>% 
+  group_by(case) %>%
+  tabulate(qi = "ev", ci = 0.95, mu = 19.2)
+```
+
+<br>
+
+### 6.3 First Differences with `tabulate()`
+
+`mu` is especially useful when computing first differences (also known as marginal effects), meaning the change in expected or predicted values. Let's give it a try!
+
+```{r}
+myfd <- mysim %>%
+  # Pivot the case ids into columns
+  pivot_wider(id_cols = c(replicate), names_from = case, 
+              values_from = ev, names_prefix = "ev_") %>%
+  # And calculate how much GREATER ev is for case 3 than for case 1!
+  mutate(fd = ev_3 - ev_1)
+```
+
+Check it out!
+
+```{r}
+myfd %>% head(3)
+```
+
+
+Or if you feel more comfortable mixing base R and tidyverse coding, try using brackets in `summarize()`, which does the same thing:
+
+```{r}
+mysim %>%
+  group_by(replicate) %>%
+  summarize(
+    ev_1 = ev[case == 1],
+    ev_3 = ev[case == 3],
+    fd = ev_3 - ev_1) %>%
+  head(3)
+```
+
+### 6.4 Coefficient Tables
+
+We might also just want to make a simple coefficent table using `tabulate()`! Many models today violate the assumption of independence of observations, which is required to compute standard errors from a variance-covariance matrix. However, we could just simulate these error instead, by taking the standard deviation from our estimation uncertainty estimates from `equate()`.
+
+When applying `tabulate()` to an output from `equate()`, you do not need to specify a quantity of interest (`qi`); `tabulate()` will build the coefficient table for all variables in the model.
+
+Here, `mu = 0` by default, which is the usual null hypothesis for beta coefficients. (However, you can change `mu` to anything, allowing you to do mini-linear hypothesis tests if you want!)
+
+```{r}
+myequations %>%
+  tabulate(ci = 0.95, mu = 0)
+```
+
+(Note: All p-values from these simulations are currently one-tailed, reflecting what share of simulations are on the opposite side of `mu` from the estimate. However, this also means that we know that the *other* tail *does* exceed *mu*, so two-tailed testing isn't strictly necessary for this method. Please report results accordingly!)
+
+<br>
+<br>
+
+# 7. Next Steps
+
+Hope you enjoy! If you like it, share it! If you use the package, please do cite it! Have questions? Feel free to reach out on [Github](https://github.com/timothyfraser/simulate). Happy simulating!
+
+```{r}
+# Get the citation like this!
+citation("simulate")
+```
+
+
+<br>
+<br>
+
+## References 
