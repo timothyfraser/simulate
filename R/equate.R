@@ -1,4 +1,4 @@
-#' equations() Function
+#' equate() Function
 #'
 #' This function allows you to generate a multivariate normal distribution
 #' @param m Model object. Required.
@@ -16,13 +16,13 @@
 #' mymodel <- mtcars %>% lm(formula = mpg ~ disp + factor(cyl))
 #' 
 #' # Generate a multivariate normal distribution for a set of model coefficients.
-#' d <- equations(m = mymodel)
+#' d <- equate(m = mymodel)
 #' 
 #' # Check out the first 5 lines below. Notice the unique ID for each row, listed under replicate.
 #' head(d)
 #' 
 
-equations = function(m = NULL, 
+equate = function(m = NULL, 
                      reps = 1000, seed = 12345){
   require(stats)
   require(broom)

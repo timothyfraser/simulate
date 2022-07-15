@@ -1,11 +1,11 @@
 #' simulate() Function
 #'
 #' This function accounts for fundamental uncertainty in model predictions, given a vector of 1 to N predicted values calculated by the calculate() function.
-#' While the equations() and calculate() functions account for estimation uncertainty, by varying model coefficients, the simulate() function accounts for fundamental uncertainty by taking random draws from the appropriate distribution corresponding to the model used for predictions.
+#' While the equate() and calculate() functions account for estimation uncertainty, by varying model coefficients, the simulate() function accounts for fundamental uncertainty by taking random draws from the appropriate distribution corresponding to the model used for predictions.
 #' simulate() returns both predicted values (where each row represents 1 random draw) and expected values (where each row represents the mean of 1000 random draws)
 #' @param data Data.frame of calculations outputted from the calculate() function. Required.
 #' @param reps (Optional) Number of random draws to use for computing expected values. 1 ev = mean of N reps. Defaults to 1000.
-#' @param seed (Optional) Seed for perfect replication of simulations. Defaults to seed specified in equations() unless otherwise specified.
+#' @param seed (Optional) Seed for perfect replication of simulations. Defaults to seed specified in equate() unless otherwise specified.
 #' @keywords simulate fundamental uncertainty
 #' @export
 #' @examples
@@ -19,7 +19,7 @@
 #' 
 #' # Generate a multivariate normal distribution for a set of model coefficients.
 #' mymodel %>%
-#'   equations() %>%
+#'   equate() %>%
 #'   calculate(setx = list(disp = c(100, 200, 300))) %>%
 #'   simulate()
 #'

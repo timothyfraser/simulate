@@ -19,12 +19,13 @@ create("simulate")
 ##################################
 
 # Process Documentation
-setwd("./simulate")
+#setwd("./simulate")
+setwd(".")
 document()
 
 # Formally install
 setwd("..")
-install("simulate")
+install("/cloud/project/")
 
 
 # Test
@@ -44,20 +45,26 @@ library(devtools)
 library(roxygen2)
 
 # Process Documentation
-setwd("./simulate")
+#setwd("..")
+setwd("/cloud/project/")
 document()
 # Formally install
 setwd("..")
-install("simulate")
+install("/cloud/project/")
 # Load
 library(simulate)
+
+#######################
+# Make a vignette
+#######################
+#usethis::use_vignette("simulate")
 
 ################################
 # Test from Github
 ################################
 
-library(devtools)
-install_github("timothyfraser/simulate")
+#library(devtools)
+#install_github("timothyfraser/simulate")
 
 #####################################
 # Test
@@ -70,11 +77,11 @@ m <- mtcars %>% lm(formula = mpg ~ disp + cyl)
 #?tabulate()
 # Generate simulated coefficient table
 e <- m %>%
-  equations() %>%
+  equate() %>%
   get_coeftable()
 
 e <- m %>%
-  equations()
+  equate()
 
 #  get_table()
 e %>% tabulate()

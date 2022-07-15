@@ -1,0 +1,8 @@
+^.*\.Rproj$
+^\.Rproj\.user$
+^simulate\.Rcheck$
+^simulate.*\.tar\.gz$
+^simulate.*\.tgz$
+^'simulate'\.Rcheck$
+^'simulate'.*\.tar\.gz$
+^'simulate'.*\.tgz$

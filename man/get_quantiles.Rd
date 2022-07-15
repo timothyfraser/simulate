@@ -10,12 +10,12 @@
 \item{lower}{lower confidence interval for quantities of interest, based on input ci. When ci = 0.95, defaults to 2.5th percentile.}
 \item{upper}{upper confidence interval for quantities of interest, based on input ci. When ci = 0.95, defaults to 97.5th percentile.}
 \item{se}{standard error, representing standard deviation of quantities of interest.}
-\item{p_value}{p-value calculated from simulations. Depicts false positive rate as the percentage of simulations on opposite side of mu (usually 0) from the median quantity of interest. If two.tailed == TRUE, this rate is accordingly multiplied by 2. p-values shown only if mu is specified. p-values are only interpretable when mu is meaningful, such as when calculating first differences where mu = 0.}
+\item{p_value}{p-value calculated from simulations. Depicts false positive rate as the percentage of simulations on opposite side of mu (usually 0) from the median quantity of interest. p-values shown only if mu is specified. p-values are only interpretable when mu is meaningful, such as when calculating first differences where mu = 0.}
 \item{stars}{Stars show statistical significance (*** p < 0.001, ** p < 0.01, * p < 0.05, . p < 0.10.)}
 }
 }
 \usage{
-get_quantiles(data, qi, ci = 0.95, mu = NULL, two.tailed = TRUE)
+get_quantiles(data, qi, ci = 0.95, mu = NULL)
 }
 \arguments{
 \item{data}{(Required) Data.frame containing N predicted and expected values}
@@ -25,8 +25,6 @@ get_quantiles(data, qi, ci = 0.95, mu = NULL, two.tailed = TRUE)
 \item{ci}{(Optional) Single value from 0 to 1. Defaults to 0.95, for a 95\% confidence interval.}
 
 \item{mu}{(Optional) To compute statistical significance, specify the null hypothesis (eg. first difference = 0). mu = 0 is most common.}
-
-\item{two.tailed}{(Optional) Defaults to TRUE. Logical indicating whether to use two-tailed (TRUE) or one-tailed (FALSE) tests of statistical significance. Two-tailed recommended.}
 }
 \description{
 This underlying function derives a summary table based on predicted or expected values simulated by the simulate() function..

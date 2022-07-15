@@ -1,8 +1,8 @@
-#' bands() Function
+#' illustrate() Function
 #'
 #' This wrapper function tabulates many confidence intervals for quantities of interest at once, eg. 90, 95, 99, and 99.9% intervals, for use in visualization. Intended for use after [simulate()].
 #' @param data (Required) Data.frame containing output from [simulate()].
-#' In this case, [bands()] will query [tabulate()] multiple times, using the [get_quantiles()] function with the following additional parameters.
+#' In this case, [illustrate()] will query [tabulate()] multiple times, using the [get_quantiles()] function with the following additional parameters.
 #' @param qi (Required) Name of vector (length 1) in data frame to summarize, written as a character vector. Typically ev, pv, or fd, but users can supply their own if needed.
 #' @param ci (Optional) Single value from 0 to 1. Defaults to 0.95, for a 95% confidence interval.
 #' @keywords coefficients
@@ -14,7 +14,7 @@
 #' 
 #' # Generate a multivariate normal distribution for a set of model coefficients.
 #' mysim <- mymodel %>%
-#'   equations() %>%
+#'   equate() %>%
 #'   calculate(setx = list(disp = c(100, 200, 300))) %>%
 #'   simulate() 
 #'   
@@ -23,7 +23,7 @@
 #'   # For each condition added in setx above, 
 #'   group_by(case) %>%
 #'   # get all confidence intervals for expected values
-#'   bands(qi = "ev")
+#'   illustrate(qi = "ev")
 #' 
 #' # You can even use it for first differences.
 #' mysim %>% 
@@ -33,7 +33,7 @@
 #'      names_prefix = "ev") %>%
 #'    # Calculate first differences
 #'    mutate(fd = ev2 - ev1) %>%
-#'    bands(qi = "fd")
+#'    illustrate(qi = "fd")
 #'  
 #'  # Notice how it's not necessary to use group_by(case) here, 
 #'  # because the data.frame no longer has cases? 
@@ -45,7 +45,7 @@
 #'  
 #' mysim %>%
 #'   group_by(case) %>%
-#'   bands(qi = "ev") %>%
+#'   illustrate(qi = "ev") %>%
 #'   ggplot(mapping = aes(x = case, y = estimate, ymin = lower, ymax = upper, fill = ci)) +
 #'   geom_crossbar()
 #'  
@@ -53,7 +53,7 @@
 #'  # Happy simulating!
 #'  
 
-bands = function(data, qi, ci = c(0.90, 0.95, 0.99, 0.999)){
+illustrate = function(data, qi, ci = c(0.90, 0.95, 0.99, 0.999)){
 
   require(dplyr)
   require(tibble)
@@ -66,16 +66,37 @@ bands = function(data, qi, ci = c(0.90, 0.95, 0.99, 0.999)){
     d %>%
       tabulate(qi = qi, ci = ci, 
                # Don't generate hypothesis tests for this portion.
-               mu = NULL, two.tailed = TRUE) %>%
+               mu = NULL) %>%
       mutate(ci = ci) %>%
       return()
   }
   
-  # For each level of confidence interval,
-  output <- ci %>%
-    # Run the get_band function
-    map_dfr(~get_band(d = data, qi = qi, ci = .))
   
+  # If a valid attribute is here,
+  if(!is.null(attr(data, "step"))){
+    # If the data comes from the equate function, 
+    # it will have a step attribute == equations
+    if(attr(data, "step") == "equations"){
+      # so generate quantiles from it
+      # For each level of confidence interval,
+      output <- ci %>% 
+        # using the get_quantiles function
+        map_dfr(~get_quantiles(data = data, ci = ., qi = qi, mu = NULL))
+      
+    }else{
+      
+      # For each level of confidence interval,
+      output <- ci %>%
+        # Run the get_band function
+        map_dfr(~get_band(d = data, qi = qi, ci = .))
+      
+    }
+  }else{
+    print("Requires output from a simulate package function, eg. equate(), calculate(), or simulate().")
+    stop()
+  }
+
+
   # If the original dataframe was grouped, we're going to reinstate those groups now
   if(is_grouped_df(data)){
     # Grab all grouping variable names

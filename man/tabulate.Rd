@@ -4,25 +4,23 @@
 \alias{tabulate}
 \title{tabulate() Function}
 \usage{
-tabulate(data, qi = NULL, ci = 0.95, mu = NULL, two.tailed = TRUE)
+tabulate(data, qi = NULL, ci = 0.95, mu = 0)
 }
 \arguments{
-\item{data}{(Required) Data.frame containing output from \code{\link[=equations]{equations()}} or \code{\link[=simulate]{simulate()}}.}
+\item{data}{(Required) Data.frame containing output from \code{\link[=equate]{equate()}} or \code{\link[=simulate]{simulate()}}.}
 
 \item{qi}{(Required) Name of vector (length 1) in data frame to summarize, written as a character vector. Typically ev, pv, or fd, but users can supply their own if needed.}
 
 \item{ci}{(Optional) Single value from 0 to 1. Defaults to 0.95, for a 95\% confidence interval.}
 
 \item{mu}{(Optional) To compute statistical significance, specify the null hypothesis (eg. first difference = 0). mu = 0 is most common.}
-
-\item{two.tailed}{(Optional) Defaults to TRUE. Logical indicating whether to use two-tailed (TRUE) or one-tailed (FALSE) tests of statistical significance. Two-tailed recommended.}
 }
 \description{
 This wrapper function computes various summary tables for statistical simulations.
 }
-\section{Using \code{\link[=tabulate]{tabulate()}} after \code{\link[=equations]{equations()}}}{
+\section{Using \code{\link[=tabulate]{tabulate()}} after \code{\link[=equate]{equate()}}}{
 
-In this case, \code{\link[=tabulate]{tabulate()}} will call this \code{\link[=@get_coeftable]{@get_coeftable()}} function, which draws on the following additional parameter.
+In this case, \code{\link[=tabulate]{tabulate()}} will call this \code{\link[=get_coeftable]{get_coeftable()}} function, which draws on the following additional parameter.
 }
 
 \section{Using \code{\link[=tabulate]{tabulate()}} after \code{\link[=simulate]{simulate()}}}{
@@ -41,12 +39,12 @@ mymodel <- mtcars \%>\% lm(formula = mpg ~ disp + factor(cyl))
 
 # Generate simulated coefficient table
 mymodel \%>\%
-  equations() \%>\%
+  equate() \%>\%
   tabulate()
 
 # To use a specific multivariate normal distribution,
-# generate it first using equations(),
-e <- mymodel \%>\% equations()
+# generate it first using equate(),
+e <- mymodel \%>\% equate()
 
 # then plug it into the tabulate() function
 e \%>\% tabulate()

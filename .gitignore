@@ -1,1 +1,9 @@
 .Rproj.user
+inst/doc
+simulate.Rcheck/
+simulate*.tar.gz
+simulate*.tgz
+'simulate'.Rcheck/
+'simulate'*.tar.gz
+'simulate'*.tgz
+heximage.R
