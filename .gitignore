@@ -6,3 +6,4 @@ simulate*.tgz
 'simulate'.Rcheck/
 'simulate'*.tar.gz
 'simulate'*.tgz
+.gitignore
