@@ -1,12 +1,16 @@
 ---
-title: "How to `simulate`"
+title: "Using the `simulate` package in `R`!"
+subtitle: "A starter vignette"
 author: "Timothy Fraser, PhD"
-output: rmarkdown::html_vignette
+output: github_document
+always_allow_html: true
+
+#output: rmarkdown::html_vignette
 bibliography: references.bib
-vignette: >
-  %\VignetteIndexEntry{simulate}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
+#vignette: >
+#  %\VignetteIndexEntry{simulate}
+#  %\VignetteEngine{knitr::rmarkdown}
+#  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r, include = FALSE}

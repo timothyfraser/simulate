@@ -72,7 +72,31 @@ library(simulate)
 ################################
 
 library(devtools)
+# It works!
 install_github("timothyfraser/simulate")
 
+library(simulate)
+vignette("simulate")
+
+
+##############
+# Trial Run
+#################
+data("starwars")
+
+starwars %>%
+  lm(formula = height ~ mass + eye_color) %>%
+  equate() %>%
+  tabulate()
+
+
+starwars %>%
+  lm(formula = height ~ mass + eye_color) %>%
+  equate() %>%
+  illustrate(qi = "mass")
+
+#######################
+# Add Package Vignette
+#######################
 
 
