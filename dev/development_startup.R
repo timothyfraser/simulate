@@ -62,12 +62,17 @@ library(simulate)
 
 #setwd("/cloud/project/")
 
+######################
+# Put on Github
+######################
+
+
 ################################
 # Test from Github
 ################################
 
-#library(devtools)
-#install_github("timothyfraser/simulate")
+library(devtools)
+install_github("timothyfraser/simulate")
 
 
 
