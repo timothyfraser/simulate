@@ -7,3 +7,5 @@ simulate*.tgz
 'simulate'*.tar.gz
 'simulate'*.tgz
 heximage.R
+*.gitignore
+'development'*.R
