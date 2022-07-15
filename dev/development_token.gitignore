@@ -1,2 +1,0 @@
-#install.packages("credentials")
-credentials::set_github_pat("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")
