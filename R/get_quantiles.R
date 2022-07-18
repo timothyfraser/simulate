@@ -35,7 +35,7 @@ get_quantiles = function(data, qi, ci = 0.95, mu = NULL){
     mybands <- data %>%
       rename(qi = qi) %>%
       summarize(
-        term = term,
+        term = term[1], # get the first (so be sure to use group_by otherwise)
         estimate = quantile(qi, probs = 0.50),
         lower = quantile(qi, probs = (1 - ci) / 2),
         upper = quantile(qi, probs = ci + (1 - ci) / 2),
@@ -53,7 +53,7 @@ get_quantiles = function(data, qi, ci = 0.95, mu = NULL){
     mybands <- data %>%
       rename(qi = qi) %>%
       summarize(
-        term = term,
+        term = term[1], # get the first (so be sure to use group_by otherwise)
         estimate = quantile(qi, probs = 0.50),
         lower = quantile(qi, probs = (1 - ci) / 2),
         upper = quantile(qi, probs = ci + (1 - ci) / 2),
