@@ -7,8 +7,8 @@
 #' @param terms (Optional) character vector of coefficient names to include. (Defaults to all.)
 #' @param drop_terms (Optional) character vector of coefficient names to exclude. (Defaults to none.)
 #' @param drop_pattern (Optional) single character regex pattern of coefficient names to exclude. (Defaults to none.)
-#' @ci (numeric value) level of confidence interval (eg. 0.90, 0.95, 0.99, 0.999) (Defaults to `0.95`.) Used to [tabulate()] summary statistics.
-#' @mu (numeric value) alternative hypothesis for `stat`. (Defaults to `0`.) Used to [tabulate()] summary statistics.  
+#' @param ci (numeric value) level of confidence interval (eg. 0.90, 0.95, 0.99, 0.999) (Defaults to `0.95`.) Used to [tabulate()] summary statistics.
+#' @param mu (numeric value) alternative hypothesis for `stat`. (Defaults to `0`.) Used to [tabulate()] summary statistics.  
 #' @keywords simulate
 #' @export
 #' @examples
