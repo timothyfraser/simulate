@@ -1,7 +1,7 @@
 #' substantiate() Function
 #'
 #' This function compares simulated estimates from 2 models, to determine whether shared coefficients changed significantly between model specifications.
-#' @param list_equations a list of 2 'equation' objects outputted from [equate()]. Should be from two different models. 
+#' @param list_equations (Required) a list of 2 'equation' objects outputted from [equate()]. Should be from two different models. 
 #' @param stat statistic to be calculated (either `"rmse"` or `"mpse"`). `"rmse"` returns root mean squared error (sigma) showing average difference between coefficients. `"mpse"` returns the square of `"rmse"`.
 #' @param per level of tabulation (either `"model"` or `"terms"`). `"model"` returns statistic for change between all coefficients; `"terms"` returns statistic for change between each individual coefficient.
 #' @param terms (Optional) character vector of coefficient names to include. (Defaults to all.)
