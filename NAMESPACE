@@ -2,6 +2,7 @@
 
 export(calculate)
 export(equate)
+export(formulate)
 export(get_coeftable)
 export(get_mode)
 export(get_newdata)

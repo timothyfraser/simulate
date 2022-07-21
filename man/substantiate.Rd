@@ -16,7 +16,7 @@ substantiate(
 )
 }
 \arguments{
-\item{list_equations}{a list of 2 'equation' objects outputted from \code{\link[=equate]{equate()}}. Should be from two different models.}
+\item{list_equations}{(Required) a list of 2 'equation' objects outputted from \code{\link[=equate]{equate()}}. Should be from two different models.}
 
 \item{stat}{statistic to be calculated (either \code{"rmse"} or \code{"mpse"}). \code{"rmse"} returns root mean squared error (sigma) showing average difference between coefficients. \code{"mpse"} returns the square of \code{"rmse"}.}
 
