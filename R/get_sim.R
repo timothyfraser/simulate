@@ -29,9 +29,9 @@ get_sim = function(i, equations, newdata = newdata, keep = keep){
   # If beta regression, extract this way
   if(type %in% c("betareg")){
     # Get all but last column (phi)
-    m$coefficients$mean <- equations[i,2:(ncol(equations)-1)]
+    m$coefficients$mean <- equations[i,2:(ncol(equations)-1)] %>% unlist()
     # Get phi, the last column
-    m$coefficients$precision <- equations[i,ncol(equations)]
+    m$coefficients$precision <- equations[i,ncol(equations)] %>% unlist()
   }
   
   

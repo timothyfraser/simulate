@@ -105,7 +105,18 @@ m <- mtcars %>%
          cyl = factor(cyl)) %>%
   betareg(formula = mpg  ~ cyl + drat)
 
-m %>% equate()
+m$coefficients$mean <- equations[i,2:(ncol(equations)-1)] %>% unlist()
+m$coefficients$phi <- equations[i, ncol(equations)]
+m$coefficients
+
+equations <- m %>% 
+  equate() 
+
+equations
+  calculate(setx = list(cyl = c("4", "8")))
+
+
+
 class(m)
 is.null(family(m))
 
