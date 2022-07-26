@@ -98,5 +98,22 @@ starwars %>%
 #######################
 # Add Package Vignette
 #######################
+library(tidyverse)
+library(betareg)
+m <- mtcars %>% 
+  mutate(mpg = mpg / 100, 
+         cyl = factor(cyl)) %>%
+  betareg(formula = mpg  ~ cyl + drat)
+
+m %>% equate()
+class(m)
+is.null(family(m))
+
+m <- mtcars %>%
+  glm(formula = mpg ~ 1, family = Gamma(link = "log"))
+m
+m %>% equate()
+
+
 
 

@@ -33,14 +33,26 @@ equate = function(m = NULL,
     print("No model supplied.")
     stop()
   }else{
-    # Get name of model type
-    if(class(m) %in% c("lm")){ type <- "lm" }
-    if(class(m) == "glm"){ type <- "glm"}
-    if(family(m)$family %in% c("logit")){ type <- "logit" }
-    if(family(m)$family %in% c("poisson")){ type <- "poisson"}  
-    if(family(m)$family == "Gamma"){ type <- "gamma" }
-    if(family(m)$family %>% str_detect(pattern = "Negative Binomial")){ type <- "nb"}
-    if(class(m) %in% c("betareg")){ type <- "betareg"}
+    
+    # Get name of model class
+    type <- dplyr::case_when(
+      class(m) %in% c("betareg") ~ "betareg",
+      class(m) %in% c("lm") ~ "lm",
+      class(m) %in% c("glm") ~ "glm",
+      TRUE ~ NA_character_
+    )
+    
+    # If glm, try a range of others
+    if("glm" %in% type){
+      # overwrite 
+      type <- dplyr::case_when(
+        family(m)$family %in% c("logit") ~ "logit",
+        family(m)$family %in% c("poisson") ~ "poisson",
+        family(m)$family == "Gamma" ~ "gamma",
+        family(m)$family %>% stringr::str_detect(pattern = "Negative Binomial") ~ "nb"
+      )        
+        
+    }
     
     # Get variance covariance matrix
     myvcov <- vcov(m)
