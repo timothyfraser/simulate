@@ -110,11 +110,8 @@ m$coefficients$phi <- equations[i, ncol(equations)]
 m$coefficients
 
 equations <- m %>% 
-  equate() 
-
-equations
+  equate() %>% 
   calculate(setx = list(cyl = c("4", "8")))
-
 
 
 class(m)

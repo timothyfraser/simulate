@@ -53,7 +53,9 @@ tabulate = function(data, qi = NULL, ci = 0.95, mu = 0){
       output <- data %>% get_quantiles(., ci = ci, qi = qi, mu = mu)
     }
   }else{
-    # If no valid attribute, still use get_quantiles
+    # If no valid attribute 
+    # (meaning it's not a direct outcome from equate, calculate, or simulate),
+    # That's okay, still use get_quantiles
     output <- data %>% get_quantiles(., ci = ci, qi = qi, mu = mu)
   }
   

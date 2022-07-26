@@ -71,33 +71,30 @@ illustrate = function(data, qi, ci = c(0.90, 0.95, 0.99, 0.999)){
       return()
   }
   
-  
   # If a valid attribute is here,
-  if(!is.null(attr(data, "step"))){
+  #if(!is.null(attr(data, "step"))){
     # If the data comes from the equate function, 
     # it will have a step attribute == equations
-    if(attr(data, "step") == "equations"){
+  #  if(attr(data, "step") == "equations"){
       # so generate quantiles from it
       # For each level of confidence interval,
-      output <- ci %>% 
+  #    output <- ci %>% 
         # using the get_quantiles function
-        map_dfr(~get_quantiles(data = data, ci = ., qi = qi, mu = NULL))
+  #      map_dfr(~get_quantiles(data = data, ci = ., qi = qi, mu = NULL))
       
-    }else{
-      
-      # For each level of confidence interval,
-      output <- ci %>%
-        # Run the get_band function
-        map_dfr(~get_band(d = data, qi = qi, ci = .))
-      
-    }
-  }else{
-    print("Requires output from a simulate package function, eg. equate(), calculate(), or simulate().")
-    stop()
-  }
-
-
-  # If the original dataframe was grouped, we're going to reinstate those groups now
+  #}else{
+  
+  # For each level of confidence interval,
+  output <- ci %>%
+    # Run the get_band function
+    map_dfr(~get_band(d = data, qi = qi, ci = .))
+  
+  
+  # Unfortunately, map_dfr breaks any existing groups
+  # So we're going to have re-instate those groups...
+  
+  # If the original dataframe was grouped, 
+  # we're going to reinstate those groups now
   if(is_grouped_df(data)){
     # Grab all grouping variable names
     mygroups <- attr(data, "groups") %>% names() %>% .[.!=".rows"]
