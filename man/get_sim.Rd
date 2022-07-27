@@ -4,7 +4,7 @@
 \alias{get_sim}
 \title{get_sim() Function}
 \usage{
-get_sim(i, equations, newdata = newdata, keep = keep)
+get_sim(i, equations, newdata = newdata, options = NULL)
 }
 \arguments{
 \item{i}{(Require) single number representing the row-number of the multivariate normal distribution simulated in equations().}

@@ -27,11 +27,17 @@
 #'   equate() %>%
 #'   calculate(setx = list(disp = c(100, 200, 300)))
 
-calculate = function(equations = NULL, setx = NULL, newdata = NULL, keep = FALSE){
+calculate = function(equations = NULL, setx = NULL, newdata = NULL, options = NULL){
   require(purrr)
   require(dplyr)
   require(tibble)
   require(stats)
+  
+  # By default, these are the options
+  ops = list(keep = FALSE, phi = TRUE)
+  # If options are provided, overwrite our default values
+  if(!is.null(options$keep)){ ops$keep <- options$keep }
+  if(!is.null(options$phi)){ ops$phi <- options$phi }
   
   # Add a warning
   if(is.null(equations)){
@@ -60,7 +66,7 @@ calculate = function(equations = NULL, setx = NULL, newdata = NULL, keep = FALSE
     # See ?get_sim() for more information.
     map_dfr(~get_sim(i = ., equations = equations, 
                      # Given the following new data
-                     newdata = newdata, keep = keep), .id = "replicate")
+                     newdata = newdata, options = ops), .id = "replicate")
   
   
   # Store the model as an attribute

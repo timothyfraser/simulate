@@ -55,6 +55,8 @@ install("/cloud/project/")
 # Load
 library(simulate)
 
+
+
 #######################
 # Make a vignette
 #######################
@@ -105,6 +107,10 @@ m <- mtcars %>%
          cyl = factor(cyl)) %>%
   betareg(formula = mpg  ~ cyl + drat)
 
+t <- m %>% equate() %>% calculate(options = list(phi = TRUE))
+
+t %>% head()
+
 m$coefficients$mean <- equations[i,2:(ncol(equations)-1)] %>% unlist()
 m$coefficients$phi <- equations[i, ncol(equations)]
 m$coefficients
@@ -123,5 +129,10 @@ m
 m %>% equate()
 
 
+options <- list(phi = TRUE)
+ops <- list(keep = FALSE, phi = FALSE)
 
+# Update any 
+ops
+options$phi
 

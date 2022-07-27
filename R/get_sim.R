@@ -9,7 +9,7 @@
 #' @export
 
 
-get_sim = function(i, equations, newdata = newdata, keep = keep){
+get_sim = function(i, equations, newdata = newdata, options = NULL){
   # Extract model from attributes of your simulated model equations
   m <- attr(equations, "model")
   type <- attr(equations, "type")
@@ -30,10 +30,15 @@ get_sim = function(i, equations, newdata = newdata, keep = keep){
   if(type %in% c("betareg")){
     # Get all but last column (phi)
     m$coefficients$mean <- equations[i,2:(ncol(equations)-1)] %>% unlist()
-    # Get phi, the last column
-    m$coefficients$precision <- equations[i,ncol(equations)] %>% unlist()
-  }
-  
+    
+    # If you added the optional argument phi, check if phi is FALSE
+      if(options$phi == FALSE){
+        # If so, don't vary phi; hold it constant
+      }else{
+        # Otherwise, get phi, the last column
+        m$coefficients$precision <- equations[i,ncol(equations)] %>% unlist()
+      }
+    }
   
   #####################
   # Gather Error Terms
@@ -104,7 +109,7 @@ get_sim = function(i, equations, newdata = newdata, keep = keep){
   
   
   # Finally, if keep = TRUE, add in the newdata;
-  if(keep == TRUE){
+  if(options$keep == TRUE){
     output %>% mutate(newdata) %>% return()
   }else{
     # otherwise, just return the simulation. This is faster.

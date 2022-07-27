@@ -143,7 +143,7 @@ get_newdata = function(m, setx = NULL){
       str_remove("[,]?[ ]?[)]")
     
     paste(
-      "I(), log(), or sqrt() Used. Approximating Name of Variable as: ", xname, 
+      "I(), log(), or sqrt() Used. Approximating Names of Variables", xname, 
       ". Please fix if incorrect.", sep = "") %>%
       print()
     
