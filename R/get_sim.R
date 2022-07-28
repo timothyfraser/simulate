@@ -94,15 +94,20 @@ get_sim = function(i, equations, newdata = newdata, options = NULL){
   # In Beta regression, use phi, the precision parameter
   # eg. rbeta(n = 1000, shape1 = , shape2 = mu * error, shape2 = (1 - mu)*error)
   if(type == "betareg"){
-    output <- tibble(
-      # Predict outcome using supplied x values in data.frame newdata
-      ysim = predict(m, newdata = newdata, type = "response"),
-      # Grab the precision term too, since it was simulated
-      phi = predict(m, newdata = newdata, type = "precision"))
-    if(options$var == TRUE){
+    
+    # Predict outcome using supplied x values in data.frame newdata
+    output <- tibble(ysim = predict(m, newdata = newdata, type = "response"))
+    
+    # As long as var == FALSE   
+    if(options$var == FALSE){
+      output <- output %>% 
+        # Grab the precision term too, since it was simulated
+        mutate(phi = predict(m, newdata = newdata, type = "precision"))
+    }else{
       # If variance == TRUE, also add this column
-      output %>%
-        mutate(var = predict(m, newdata = newdata, type = "variance"))
+      output <- output %>%
+        # Grab the variance term too, since it was simulated
+        mutate(variance = predict(m, newdata = newdata, type = "variance"))
     }
     
   }

@@ -84,10 +84,26 @@ simulate = function(data, seed = NULL, reps = 1000){
                 ev = rnegbin(n = reps, mu = ysim, theta = theta) %>% mean())
   }
   if(type == "betareg"){
-    output <- data %>%
+    
+    if("variance" %in% names(output)){
+      # If variance was generated, then simulate using variance,
+      # approximating shape1 and shape2 using method of moments
+      output <- data %>%
       group_by(replicate, case) %>%
-      summarize(pv = rbeta(n = 1, shape1 = ysim * phi, shape2 = (1 - ysim)*phi),
-                ev = rbeta(n = reps, shape1 = ysim * phi, shape2 = (1 - ysim)*phi) %>% mean())
+      summarize(
+        get_moments(mu = ysim, var = variance) %>%
+          with(tibble(pv = rbeta(n = 1, shape1 = shape1, shape2 = shape2),
+                      ev = rbeta(n = reps, shape1 = .$shape1, shape2 = .$shape2) %>% mean())))
+      
+    }else{
+      # If variance ISN'T a column in the dataframe,
+      # then simulate using phi
+      output <- data %>%
+        group_by(replicate, case) %>%
+        summarize(pv = rbeta(n = 1, shape1 = ysim * phi, shape2 = (1 - ysim)*phi),
+                  ev = rbeta(n = reps, shape1 = ysim * phi, shape2 = (1 - ysim)*phi) %>% mean())
+    }
+      
   }
   
   structure(.Data = output %>% ungroup(),
