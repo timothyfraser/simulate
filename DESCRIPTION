@@ -17,4 +17,6 @@ Suggests:
     tidyverse,
     broom,
     gtools
+    mvtnorm
+    MASS
 VignetteBuilder: knitr

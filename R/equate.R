@@ -4,6 +4,7 @@
 #' @param m Model object. Required.
 #' @param reps Number of simulations to generate of coefficients. Defaults to 1000.
 #' @param seed Seed for perfect replication of simulations. Defaults to 12345 unless otherwise specified.
+#' @param package Package used to simulate. Options include `mvtnorm` (recommended) or `MASS`.
 #' @keywords simulate
 #' @export
 #' @examples
@@ -22,8 +23,7 @@
 #' head(d)
 #' 
 
-equate = function(m = NULL, 
-                     reps = 1000, seed = 12345){
+equate = function(m = NULL, reps = 1000, seed = 12345, package = "mvtnorm"){
   require(stats)
   require(broom)
   
@@ -81,14 +81,27 @@ equate = function(m = NULL,
   if(is.null(seed)){seed = 12345}
   set.seed(seed)
   
+  if(package == "MASS"){  
   # Construct multivariate normal distribution of coefficients,
   # representing estimation uncertainty
-  MASS::mvrnorm(
+  mydist <- MASS::mvrnorm(
     n = reps, # get 1000 simulations per imputation
     # get vector of our coefficients
     mu = mycoef,
     # get variance-covariance matrix
-    Sigma = myvcov) %>%
+    Sigma = myvcov)
+  }else if(package == "mvtnorm"){
+  # Alternatively, use mvtnorm package to simulate equations
+  # This is now recommended over MASS
+  mydist <- mvtnorm::rmvnorm(
+    n = reps, 
+    mean = mycoef, 
+    sigma = myvcov,
+    # Fastest algorithm for decomposition
+    method = "chol")
+  }
+  
+  mydist %>%
     as_tibble() %>%
     # Add an ID row
     bind_cols(tibble(replicate = 1:reps), .) %>%
