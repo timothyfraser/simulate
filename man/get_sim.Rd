@@ -13,7 +13,7 @@ get_sim(i, equations, newdata = newdata, options = NULL)
 
 \item{newdata}{(Required) Data.frame containing hypothetical predictor values of X for K-columns of coefficients.}
 
-\item{keep}{(FALSE by default) Logical which if TRUE tells model to keep the contents of newdata in output data.frame. If FALSE, exclude them for efficiency.}
+\item{options}{(Optional) Options passed from \code{\link[=calculate]{calculate()}}. See \code{\link[=calculate]{calculate()}} for details.}
 }
 \description{
 This function calculates simulated outcomes based on an N-row data.frame of K-columns of coefficients, supplied from equations(). Internal function; use get_predictions() instead.

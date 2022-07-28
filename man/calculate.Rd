@@ -13,7 +13,13 @@ calculate(equations = NULL, setx = NULL, newdata = NULL, options = NULL)
 
 \item{newdata}{(Optional) Data.frame containing hypothetical predictor values of X for K-columns of coefficients.}
 
-\item{keep}{(FALSE by default) Logical which if TRUE tells model to keep the contents of newdata in output data.frame. If FALSE, exclude them for efficiency.}
+\item{options}{(NULL by default) List of options \code{keep = FALSE}, \code{phi = TRUE}, and \code{var = FALSE}}
+
+\item{keep}{Logical which if TRUE tells model to keep the contents of newdata in output data.frame. If FALSE, exclude them for efficiency.}
+
+\item{phi}{Logical which if TRUE tells model to use simulated phi (only applicable for \code{betareg} models).}
+
+\item{var}{Logical which if TRUE tells model to calculate variance (only applicable for \code{betareg} models).}
 }
 \description{
 This function calculates simulated outcomes based on an N-row data.frame of K-columns of coefficients, supplied from equate().
