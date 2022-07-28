@@ -4,7 +4,7 @@
 \alias{equate}
 \title{equate() Function}
 \usage{
-equate(m = NULL, reps = 1000, seed = 12345)
+equate(m = NULL, reps = 1000, seed = 12345, package = "mvtnorm")
 }
 \arguments{
 \item{m}{Model object. Required.}
@@ -12,6 +12,8 @@ equate(m = NULL, reps = 1000, seed = 12345)
 \item{reps}{Number of simulations to generate of coefficients. Defaults to 1000.}
 
 \item{seed}{Seed for perfect replication of simulations. Defaults to 12345 unless otherwise specified.}
+
+\item{package}{Package used to simulate. Options include \code{mvtnorm} (recommended) or \code{MASS}.}
 }
 \description{
 This function allows you to generate a multivariate normal distribution
