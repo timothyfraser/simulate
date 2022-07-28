@@ -16,7 +16,7 @@ Suggests:
     rmarkdown,
     tidyverse,
     broom,
-    gtools
-    mvtnorm
+    gtools,
+    mvtnorm,
     MASS
 VignetteBuilder: knitr
