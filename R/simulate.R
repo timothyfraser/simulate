@@ -85,7 +85,7 @@ simulate = function(data, seed = NULL, reps = 1000){
   }
   if(type == "betareg"){
     
-    if("variance" %in% names(output)){
+    if("variance" %in% names(data)){
       # If variance was generated, then simulate using variance,
       # approximating shape1 and shape2 using method of moments
       output <- data %>%
